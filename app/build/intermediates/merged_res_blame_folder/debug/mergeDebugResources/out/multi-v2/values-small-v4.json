@@ -4,7 +4,7 @@
             "outputFile": "com.voicenotes.app-mergeDebugResources-72:/values-small-v4/values-small-v4.xml",
             "map": [
                 {
-                    "source": "/Users/tema/.gradle/caches/8.9/transforms/9be38e10ece7c660d9792b7b12845bb0/transformed/material-1.10.0/res/values-small-v4/values-small-v4.xml",
+                    "source": "/Users/tema/.gradle/caches/8.9/transforms/7881ccd9bbc34e492c065c61fbec2acc/transformed/material-1.10.0/res/values-small-v4/values-small-v4.xml",
                     "from": {
                         "startLines": "2,3,4,5",
                         "startColumns": "4,4,4,4",
