@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.voicenotes.app-mergeDebugResources-72:/values-port/values-port.xml",
+            "map": [
+                {
+                    "source": "/Users/tema/.gradle/caches/8.9/transforms/d4ccde405568bf3b6828bdb808e9fdbc/transformed/appcompat-1.6.1/res/values-port/values-port.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "55",
+                        "endOffsets": "106"
+                    }
+                }
+            ]
+        }
+    ]
+}

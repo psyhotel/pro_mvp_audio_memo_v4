@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="backgroundDark">#0B0210</color>
+    <color name="neonBlue">#00B0FF</color>
+    <color name="neonPurple">#8A2BE2</color>
+    <string name="app_name">VoiceNotes</string>
+    <style name="Theme.App" parent="Theme.Material3.DayNight.NoActionBar">
+        
+    </style>
+</resources>
