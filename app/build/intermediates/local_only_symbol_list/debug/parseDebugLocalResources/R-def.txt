@@ -3,5 +3,11 @@ local
 color backgroundDark
 color neonBlue
 color neonPurple
+drawable ic_add
+drawable ic_arrow_back
+drawable ic_check
+drawable ic_lightbulb
+drawable ic_mic
+drawable ic_note
 string app_name
 style Theme.App

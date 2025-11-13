@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.voicenotes.app-mergeDebugResources-72:/values-v23/values-v23.xml",
+            "outputFile": "com.voicenotes.app-mergeDebugResources-70:/values-v23/values-v23.xml",
             "map": [
                 {
-                    "source": "/Users/tema/.gradle/caches/8.9/transforms/5563430dfcb51133ec7d7b0e39d47467/transformed/appcompat-1.6.1/res/values-v23/values-v23.xml",
+                    "source": "/Users/tema/.gradle/caches/8.9/transforms/53c45fd7e42f3d0e52e25d557700067e/transformed/appcompat-1.6.1/res/values-v23/values-v23.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,20,34,35,36,39,43,44,45,46",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -23,17 +23,7 @@
                     }
                 },
                 {
-                    "source": "/Users/tema/.gradle/caches/8.9/transforms/12c44edb6e3d5a043c1348896da88a22/transformed/work-runtime-2.8.1/res/values-v23/values-v23.xml",
-                    "from": {
-                        "startLines": "2,3",
-                        "startColumns": "4,4",
-                        "startOffsets": "55,121",
-                        "endColumns": "65,62",
-                        "endOffsets": "116,179"
-                    }
-                },
-                {
-                    "source": "/Users/tema/.gradle/caches/8.9/transforms/1c783a90161386e9dec9394259f04f2f/transformed/cardview-1.0.0/res/values-v23/values-v23.xml",
+                    "source": "/Users/tema/.gradle/caches/8.9/transforms/25fc85b269778e05a033a81cae317292/transformed/cardview-1.0.0/res/values-v23/values-v23.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
@@ -52,7 +42,17 @@
                     }
                 },
                 {
-                    "source": "/Users/tema/.gradle/caches/8.9/transforms/7881ccd9bbc34e492c065c61fbec2acc/transformed/material-1.10.0/res/values-v23/values-v23.xml",
+                    "source": "/Users/tema/.gradle/caches/8.9/transforms/cd921afd7a10178f66baee59b4fe0365/transformed/work-runtime-2.9.1/res/values-v23/values-v23.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,121",
+                        "endColumns": "65,62",
+                        "endOffsets": "116,179"
+                    }
+                },
+                {
+                    "source": "/Users/tema/.gradle/caches/8.9/transforms/d6e41136e8b524c479be939c863e749e/transformed/material-1.10.0/res/values-v23/values-v23.xml",
                     "from": {
                         "startLines": "2,5,9,13,16,21,25,28,31,34,39,42,46",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4",

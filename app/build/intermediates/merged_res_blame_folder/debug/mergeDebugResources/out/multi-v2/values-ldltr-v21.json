@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.voicenotes.app-mergeDebugResources-72:/values-ldltr-v21/values-ldltr-v21.xml",
+            "outputFile": "com.voicenotes.app-mergeDebugResources-70:/values-ldltr-v21/values-ldltr-v21.xml",
             "map": [
                 {
-                    "source": "/Users/tema/.gradle/caches/8.9/transforms/5563430dfcb51133ec7d7b0e39d47467/transformed/appcompat-1.6.1/res/values-ldltr-v21/values-ldltr-v21.xml",
+                    "source": "/Users/tema/.gradle/caches/8.9/transforms/53c45fd7e42f3d0e52e25d557700067e/transformed/appcompat-1.6.1/res/values-ldltr-v21/values-ldltr-v21.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",

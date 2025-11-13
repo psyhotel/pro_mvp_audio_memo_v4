@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.voicenotes.app-mergeDebugResources-72:/values-v26/values-v26.xml",
+            "outputFile": "com.voicenotes.app-mergeDebugResources-70:/values-v26/values-v26.xml",
             "map": [
                 {
-                    "source": "/Users/tema/.gradle/caches/8.9/transforms/5563430dfcb51133ec7d7b0e39d47467/transformed/appcompat-1.6.1/res/values-v26/values-v26.xml",
+                    "source": "/Users/tema/.gradle/caches/8.9/transforms/53c45fd7e42f3d0e52e25d557700067e/transformed/appcompat-1.6.1/res/values-v26/values-v26.xml",
                     "from": {
                         "startLines": "2,3,4,8,12,16",
                         "startColumns": "4,4,4,4,4,4",

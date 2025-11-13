@@ -1,0 +1,4 @@
+com.voicenotes.test.app-androidTest-0 /Users/tema/Desktop/pro_mvp_audio_memo_v4/app/build/generated/res/resValues/androidTest/debug
+com.voicenotes.test.app-mergeDebugAndroidTestResources-1 /Users/tema/Desktop/pro_mvp_audio_memo_v4/app/build/intermediates/incremental/debugAndroidTest/mergeDebugAndroidTestResources/merged.dir
+com.voicenotes.test.app-mergeDebugAndroidTestResources-2 /Users/tema/Desktop/pro_mvp_audio_memo_v4/app/build/intermediates/incremental/debugAndroidTest/mergeDebugAndroidTestResources/stripped.dir
+com.voicenotes.test.app-debugAndroidTest-3 /Users/tema/Desktop/pro_mvp_audio_memo_v4/app/build/intermediates/merged_res/debugAndroidTest/mergeDebugAndroidTestResources

@@ -1,51 +1,87 @@
 package com.voicenotes.ui.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.voicenotes.data.local.entities.NoteEntity
+import androidx.compose.ui.platform.LocalContext
 import com.voicenotes.ui.viewmodel.NoteViewModel
-import java.util.*
-import com.voicenotes.ui.screens.waveform.WaveformComposable
-import java.io.File
+import com.voicenotes.data.local.entities.NoteEntity
+import com.voicenotes.utils.AudioRecorder
+import kotlinx.coroutines.launch
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 
 @Composable
-fun AddNoteScreen(nav: NavController, vm: NoteViewModel) {
+fun AddNoteScreen(viewModel: NoteViewModel, onBack: () -> Unit) {
     var title by remember { mutableStateOf("") }
-    var text by remember { mutableStateOf("") }
-    var audioPath by remember { mutableStateOf<String?>(null) }
+    var category by remember { mutableStateOf("Обычное") }
     var isRecording by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val audioRecorder = remember { AudioRecorder() }
+    var recordedFilePath by remember { mutableStateOf<String?>(null) }
 
-    Column(modifier = Modifier.fillMaxSize().padding(12.dp)) {
-        OutlinedTextField(value = title, onValueChange = { title = it }, label = { Text("Title") }, modifier = Modifier.fillMaxWidth())
-        Spacer(Modifier.height(8.dp))
-        OutlinedTextField(value = text, onValueChange = { text = it }, label = { Text("Text") }, modifier = Modifier.fillMaxWidth(), maxLines = 4)
-        Spacer(Modifier.height(8.dp))
-        WaveformComposable(modifier = Modifier.fillMaxWidth().height(100.dp))
-        Spacer(Modifier.height(8.dp))
-        Row {
-            Button(onClick = {
+    // Получаем lifecycleOwner и scope
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val scope = lifecycleOwner.lifecycleScope
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        TextField(
+            value = title,
+            onValueChange = { title = it },
+            label = { Text("Заголовок") }
+        )
+
+        TextField(
+            value = category,
+            onValueChange = { category = it },
+            label = { Text("Категория") }
+        )
+
+        Button(
+            onClick = {
                 if (!isRecording) {
-                    val out = File.createTempFile("audio_", ".m4a").absolutePath
-                    audioPath = out
-                    // Recording to be wired
+                    val outputPath = "${context.getExternalFilesDir(null)?.absolutePath}/record_${System.currentTimeMillis()}.m4a"
+                    // Запускаем suspend-функцию в scope
+                    scope.launch {
+                        audioRecorder.start(outputPath) // ✅ Теперь можно вызвать
+                    }
+                    recordedFilePath = outputPath
                     isRecording = true
                 } else {
+                    audioRecorder.stop() // stop — обычная функция, вызывается напрямую
                     isRecording = false
                 }
-            }) { Text(if (!isRecording) "Record" else "Stop") }
-            Spacer(Modifier.width(8.dp))
-            Button(onClick = {
-                val id = UUID.randomUUID().toString()
-                val note = NoteEntity(id = id, title = title, text = text, audioPath = audioPath)
-                vm.save(note)
-                nav.navigateUp()
-            }) { Text("Save") }
+            }
+        ) {
+            Text(if (isRecording) "Остановить запись" else "Начать запись")
+        }
+
+        Button(
+            onClick = {
+                val filePath = recordedFilePath
+                val note = NoteEntity(
+                    title = title,
+                    content = "Транскрибация будет позже...",
+                    category = category,
+                    timestamp = System.currentTimeMillis(),
+                    filePath = filePath,
+                    reminderTime = null
+                )
+                viewModel.insertNote(note)
+                onBack()
+            }
+        ) {
+            Text("Сохранить")
         }
     }
 }

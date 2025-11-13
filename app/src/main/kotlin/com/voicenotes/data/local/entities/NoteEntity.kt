@@ -5,12 +5,13 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "notes")
 data class NoteEntity(
-    @PrimaryKey val id: String,
-    var title: String? = null,
-    var text: String? = null,
-    var audioPath: String? = null,
-    var created: Long = System.currentTimeMillis(),
-    var updated: Long = System.currentTimeMillis(),
-    var reminderMillis: Long? = null,
-    var category: String? = null
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val title: String,
+    val content: String,
+    val category: String,
+    val timestamp: Long,
+    val filePath: String?,
+    val reminderTime: Long?,
+    val reportType: String? = null
 )

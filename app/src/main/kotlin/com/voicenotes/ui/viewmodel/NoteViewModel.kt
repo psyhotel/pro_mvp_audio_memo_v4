@@ -1,36 +1,61 @@
 package com.voicenotes.ui.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import androidx.work.workDataOf
 import com.voicenotes.data.local.entities.NoteEntity
 import com.voicenotes.data.repository.NoteRepository
-import com.voicenotes.worker.ReminderWorker
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import java.util.concurrent.TimeUnit
 
-@HiltViewModel
-class NoteViewModel @Inject constructor(private val repo: NoteRepository, application: Application): AndroidViewModel(application) {
+class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
+    private val _notes = MutableStateFlow<List<NoteEntity>>(emptyList())
+    val notes: StateFlow<List<NoteEntity>> = _notes
 
-    val notes = repo.allNotes().stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    private val _categories = MutableStateFlow<List<String>>(emptyList())
+    val categories: StateFlow<List<String>> = _categories
 
-    fun save(note: NoteEntity) = viewModelScope.launch { repo.save(note) }
-    fun delete(note: NoteEntity) = viewModelScope.launch { repo.delete(note) }
-    suspend fun get(id: String) = repo.get(id)
+    init {
+        loadNotes()
+        loadCategories()
+    }
 
-    fun scheduleReminder(note: NoteEntity, delayMillis: Long) {
-        val data = workDataOf("title" to (note.title ?: "Audio Note"), "noteId" to note.id)
-        val req = OneTimeWorkRequestBuilder<ReminderWorker>()
-            .setInitialDelay(delayMillis, TimeUnit.MILLISECONDS)
-            .setInputData(data)
-            .build()
-        WorkManager.getInstance(getApplication()).enqueue(req)
+    fun loadNotes() {
+        viewModelScope.launch {
+            _notes.value = repository.getAllNotes()
+        }
+    }
+
+    fun loadCategories() {
+        viewModelScope.launch {
+            _categories.value = repository.getAllCategories()
+        }
+    }
+
+    fun insertNote(note: NoteEntity) {
+        viewModelScope.launch {
+            repository.insertNote(note)
+            loadNotes()
+        }
+    }
+
+    fun updateNote(note: NoteEntity) {
+        viewModelScope.launch {
+            repository.updateNote(note)
+            loadNotes()
+        }
+    }
+
+    fun deleteNote(note: NoteEntity) {
+        viewModelScope.launch {
+            repository.deleteNote(note)
+            loadNotes()
+        }
+    }
+
+    fun loadNotesByCategory(category: String) {
+        viewModelScope.launch {
+            _notes.value = repository.getNotesByCategory(category)
+        }
     }
 }

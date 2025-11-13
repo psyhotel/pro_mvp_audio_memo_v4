@@ -1,13 +1,11 @@
 package com.voicenotes.di
 
-import android.content.Context
 import com.voicenotes.data.local.AppDatabase
 import com.voicenotes.data.repository.NoteRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Singleton
 
 @Module
@@ -15,9 +13,9 @@ import javax.inject.Singleton
 object AppModule {
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext app: Context) = AppDatabase.get(app)
+    fun provideDatabase(): AppDatabase = AppDatabase.getDatabase()
 
     @Provides
     @Singleton
-    fun provideNoteRepository(db: AppDatabase) = NoteRepository(db.noteDao())
+    fun provideNoteRepository(db: AppDatabase): NoteRepository = NoteRepository(db.noteDao())
 }

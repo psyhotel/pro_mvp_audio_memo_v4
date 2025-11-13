@@ -1,7 +1,6 @@
 package com.voicenotes;
 
 import com.voicenotes.di.AppModule;
-import com.voicenotes.ui.viewmodel.NoteViewModel_HiltModules;
 import dagger.Binds;
 import dagger.Component;
 import dagger.Module;
@@ -46,8 +45,10 @@ import dagger.hilt.android.scopes.ViewScoped;
 import dagger.hilt.components.SingletonComponent;
 import dagger.hilt.internal.GeneratedComponent;
 import dagger.hilt.migration.DisableInstallInCheck;
+import javax.annotation.processing.Generated;
 import javax.inject.Singleton;
 
+@Generated("dagger.hilt.processor.internal.root.RootProcessor")
 public final class App_HiltComponents {
   private App_HiltComponents() {
   }
@@ -56,6 +57,7 @@ public final class App_HiltComponents {
       subcomponents = ServiceC.class
   )
   @DisableInstallInCheck
+  @Generated("dagger.hilt.processor.internal.root.RootProcessor")
   abstract interface ServiceCBuilderModule {
     @Binds
     ServiceComponentBuilder bind(ServiceC.Builder builder);
@@ -65,6 +67,7 @@ public final class App_HiltComponents {
       subcomponents = ActivityRetainedC.class
   )
   @DisableInstallInCheck
+  @Generated("dagger.hilt.processor.internal.root.RootProcessor")
   abstract interface ActivityRetainedCBuilderModule {
     @Binds
     ActivityRetainedComponentBuilder bind(ActivityRetainedC.Builder builder);
@@ -74,6 +77,7 @@ public final class App_HiltComponents {
       subcomponents = ActivityC.class
   )
   @DisableInstallInCheck
+  @Generated("dagger.hilt.processor.internal.root.RootProcessor")
   abstract interface ActivityCBuilderModule {
     @Binds
     ActivityComponentBuilder bind(ActivityC.Builder builder);
@@ -83,6 +87,7 @@ public final class App_HiltComponents {
       subcomponents = ViewModelC.class
   )
   @DisableInstallInCheck
+  @Generated("dagger.hilt.processor.internal.root.RootProcessor")
   abstract interface ViewModelCBuilderModule {
     @Binds
     ViewModelComponentBuilder bind(ViewModelC.Builder builder);
@@ -92,6 +97,7 @@ public final class App_HiltComponents {
       subcomponents = ViewC.class
   )
   @DisableInstallInCheck
+  @Generated("dagger.hilt.processor.internal.root.RootProcessor")
   abstract interface ViewCBuilderModule {
     @Binds
     ViewComponentBuilder bind(ViewC.Builder builder);
@@ -101,6 +107,7 @@ public final class App_HiltComponents {
       subcomponents = FragmentC.class
   )
   @DisableInstallInCheck
+  @Generated("dagger.hilt.processor.internal.root.RootProcessor")
   abstract interface FragmentCBuilderModule {
     @Binds
     FragmentComponentBuilder bind(FragmentC.Builder builder);
@@ -110,6 +117,7 @@ public final class App_HiltComponents {
       subcomponents = ViewWithFragmentC.class
   )
   @DisableInstallInCheck
+  @Generated("dagger.hilt.processor.internal.root.RootProcessor")
   abstract interface ViewWithFragmentCBuilderModule {
     @Binds
     ViewWithFragmentComponentBuilder bind(ViewWithFragmentC.Builder builder);
@@ -147,8 +155,7 @@ public final class App_HiltComponents {
           ActivityCBuilderModule.class,
           ViewModelCBuilderModule.class,
           HiltWrapper_ActivityRetainedComponentManager_LifecycleModule.class,
-          HiltWrapper_SavedStateHandleModule.class,
-          NoteViewModel_HiltModules.KeyModule.class
+          HiltWrapper_SavedStateHandleModule.class
       }
   )
   @ActivityRetainedScoped
@@ -183,10 +190,7 @@ public final class App_HiltComponents {
   }
 
   @Subcomponent(
-      modules = {
-          HiltWrapper_HiltViewModelFactory_ViewModelModule.class,
-          NoteViewModel_HiltModules.BindsModule.class
-      }
+      modules = HiltWrapper_HiltViewModelFactory_ViewModelModule.class
   )
   @ViewModelScoped
   public abstract static class ViewModelC implements ViewModelComponent,

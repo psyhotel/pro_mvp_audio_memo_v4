@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.voicenotes.app-mergeDebugResources-72:/values-h320dp-port-v13/values-h320dp-port-v13.xml",
+            "outputFile": "com.voicenotes.app-mergeDebugResources-70:/values-h320dp-port-v13/values-h320dp-port-v13.xml",
             "map": [
                 {
-                    "source": "/Users/tema/.gradle/caches/8.9/transforms/7881ccd9bbc34e492c065c61fbec2acc/transformed/material-1.10.0/res/values-h320dp-port-v13/values-h320dp-port-v13.xml",
+                    "source": "/Users/tema/.gradle/caches/8.9/transforms/d6e41136e8b524c479be939c863e749e/transformed/material-1.10.0/res/values-h320dp-port-v13/values-h320dp-port-v13.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",

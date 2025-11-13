@@ -1,45 +1,96 @@
 plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-    id 'org.jetbrains.kotlin.plugin.compose' version '2.0.0'
-    id 'kotlin-kapt'
-    id 'dagger.hilt.android.plugin'
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.0"
+    id("com.google.devtools.ksp")
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0" // ✅ Добавлен
+    id("com.google.dagger.hilt.android")
 }
 
 android {
-    namespace 'com.voicenotes'
-    compileSdk 34
+    namespace = "com.voicenotes"
+    compileSdk = 34
+
     defaultConfig {
-        applicationId "com.voicenotes"
-        minSdk 24
-        targetSdk 34
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        applicationId = "com.voicenotes"
+        minSdk = 26
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0"
     }
-    buildFeatures { compose true }
-    kotlinOptions { jvmTarget = '1.8' }
+
+    buildTypes {
+        release {
+            minifyEnabled = false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    buildFeatures {
+        compose = true // ✅ Это остаётся
+    }
+
+    // composeOptions { // ❌ Удалён
+    //     kotlinCompilerExtensionVersion = "1.5.14"
+    // }
+
+    // Устраняем конфликт ресурсов при мердже JavaRes (groovy ExtensionModule)
+    packaging {
+        resources {
+            excludes += [
+                "META-INF/groovy/org.codehaus.groovy.runtime.ExtensionModule"
+                ,"META-INF/groovy-release-info.properties"
+                ,"META-INF/INDEX.LIST"
+            ]
+        }
+    }
 }
 
-dependencies {
-    implementation 'androidx.core:core-ktx:1.12.0'
-    implementation 'androidx.activity:activity-compose:1.8.0'
-    implementation 'androidx.compose.ui:ui:1.6.7'
-    implementation 'androidx.compose.material3:material3:1.3.0'
+    dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-stdlib")
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.10.0")
+    // Compose BOM для согласованных версий Compose
+    implementation(platform("androidx.compose:compose-bom:2024.09.00"))
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    // Activity Compose, совместимая с Compose 1.7.x
+    implementation("androidx.activity:activity-compose:1.9.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation("androidx.navigation:navigation-compose:2.7.5")
+
+    // Room
+    implementation("androidx.room:room-runtime:2.6.0")
+    implementation("androidx.room:room-ktx:2.6.0")
+    ksp("androidx.room:room-compiler:2.6.0")
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    // Hilt DI
+    implementation("com.google.dagger:hilt-android:2.51")
+    ksp("com.google.dagger:hilt-compiler:2.51")
+
+    // WorkManager
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
+
+    // Permissions
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+
+    // iCal
+    implementation("org.mnode.ical4j:ical4j:3.2.12")
+
+    // ViewModel Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3")
-    implementation 'androidx.compose.ui:ui-tooling-preview:1.6.7'
-    debugImplementation 'androidx.compose.ui:ui-tooling:1.6.7'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1'
-    implementation 'androidx.navigation:navigation-compose:2.7.0'
-    implementation 'androidx.room:room-runtime:2.6.1'
-    kapt 'androidx.room:room-compiler:2.6.1'
-    implementation 'androidx.room:room-ktx:2.6.1'
-    implementation 'com.google.dagger:hilt-android:2.51'
-    kapt 'com.google.dagger:hilt-compiler:2.51'
-    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
-    implementation 'androidx.work:work-runtime-ktx:2.8.1'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
-    testImplementation 'junit:junit:4.13.2'
 }
