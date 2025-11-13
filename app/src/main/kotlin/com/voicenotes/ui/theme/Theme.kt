@@ -19,13 +19,15 @@ import androidx.core.view.WindowCompat
 private val DarkColorScheme = darkColorScheme(
     primary = DarkBlue,
     secondary = Navy,
-    tertiary = MicrophoneRed
+    tertiary = MicrophoneRed,
+    background = DarkBlue,
+    surface = Navy
 )
 
 @Composable
 fun VoiceNotesTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+    darkTheme: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -34,14 +36,19 @@ fun VoiceNotesTheme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
         darkTheme -> DarkColorScheme
-        else -> lightColorScheme()
+        else -> lightColorScheme(
+            primary = DarkBlue,
+            secondary = Navy,
+            tertiary = MicrophoneRed
+        )
     }
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+            // В тёмной теме нужны светлые иконки статус-бара
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
 
