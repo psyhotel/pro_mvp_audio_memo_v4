@@ -1,6 +1,7 @@
 package com.voicenotes.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -17,16 +18,20 @@ import androidx.compose.runtime.collectAsState
 @Composable
 fun AppScreen() {
     val navController = rememberNavController()
-    val repository = NoteRepository(AppDatabase.getDatabase().noteDao())
-    val viewModel = NoteViewModel(repository)
+    val repository = remember { NoteRepository(AppDatabase.getDatabase().noteDao()) }
+    val viewModel = remember { NoteViewModel(repository) }
 
     NavHost(navController = navController, startDestination = "main") {
         composable("main") {
             val notes = viewModel.notes.collectAsState().value
+            val categories = viewModel.categories.collectAsState().value
             MainScreen(
                 notes = notes,
+                categories = categories,
                 onAddClick = { navController.navigate("add") },
-                onNoteClick = { id -> navController.navigate("detail/$id") }
+                onNoteClick = { id -> navController.navigate("detail/$id") },
+                onDelete = { note -> viewModel.deleteNote(note) },
+                onRenameCategory = { old, new -> viewModel.renameCategory(old, new) }
             )
         }
         composable("add") {

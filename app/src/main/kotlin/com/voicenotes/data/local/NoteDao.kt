@@ -25,4 +25,7 @@ interface NoteDao {
 
     @Query("SELECT * FROM notes WHERE category = :category")
     suspend fun getNotesByCategory(category: String): List<NoteEntity>
+
+    @Query("UPDATE notes SET category = :newCategory WHERE category = :oldCategory")
+    suspend fun renameCategory(oldCategory: String, newCategory: String)
 }

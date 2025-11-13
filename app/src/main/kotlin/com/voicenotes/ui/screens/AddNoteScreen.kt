@@ -25,6 +25,7 @@ import com.voicenotes.utils.AudioRecorder
 import kotlinx.coroutines.launch
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.compose.runtime.rememberCoroutineScope
 
 @Composable
 fun AddNoteScreen(viewModel: NoteViewModel, onBack: () -> Unit) {
@@ -34,8 +35,7 @@ fun AddNoteScreen(viewModel: NoteViewModel, onBack: () -> Unit) {
     val audioRecorder = remember { AudioRecorder() }
     var recordedFilePath by remember { mutableStateOf<String?>(null) }
 
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val scope = lifecycleOwner.lifecycleScope
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(isRecording) {
         if (isRecording) {

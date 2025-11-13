@@ -11,4 +11,5 @@ class NoteRepository(private val noteDao: NoteDao) {
     suspend fun deleteNote(note: NoteEntity) = noteDao.deleteNote(note)
     suspend fun getAllCategories() = noteDao.getAllCategories()
     suspend fun getNotesByCategory(category: String) = noteDao.getNotesByCategory(category)
+    suspend fun renameCategory(oldCategory: String, newCategory: String) = noteDao.renameCategory(oldCategory, newCategory)
 }

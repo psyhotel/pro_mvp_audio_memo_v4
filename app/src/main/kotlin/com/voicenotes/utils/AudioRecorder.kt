@@ -6,6 +6,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -18,10 +20,11 @@ class AudioRecorder {
 
     private var recordingJob: Job? = null // Для отмены корутины записи
 
-    // Обычная функция, которая запускает корутину
-    fun start(outputPath: String) {
+    // Запуск записи на фоновых потоках
+    suspend fun start(outputPath: String) {
         stop() // Останавливаем предыдущую запись
-        recordingJob = CoroutineScope(Dispatchers.Main).launch {
+        // Инициализация и старт MediaRecorder на IO
+        withContext(Dispatchers.IO) {
             recorder = MediaRecorder().apply {
                 setAudioSource(MediaRecorder.AudioSource.MIC)
                 setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
@@ -30,11 +33,13 @@ class AudioRecorder {
                 prepare()
                 start()
             }
-            for (i in 0 until 1000) {
+        }
+        // Отдельная корутина для чтения амплитуды без блокировки UI
+        recordingJob = CoroutineScope(Dispatchers.Default).launch {
+            while (isActive) {
                 try {
-                    val a = recorder?.maxAmplitude ?: 0
-                    _amplitude.value = a
-                } catch (e: Exception) { _amplitude.value = 0 }
+                    _amplitude.value = recorder?.maxAmplitude ?: 0
+                } catch (_: Exception) { _amplitude.value = 0 }
                 delay(50)
             }
         }
@@ -52,8 +57,8 @@ class AudioRecorder {
         stopPlay()
         player = MediaPlayer().apply {
             setDataSource(path)
-            prepare()
-            start()
+            setOnPreparedListener { it.start() }
+            prepareAsync()
         }
     }
 

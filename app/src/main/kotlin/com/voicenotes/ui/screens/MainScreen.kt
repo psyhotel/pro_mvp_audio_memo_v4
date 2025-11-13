@@ -5,12 +5,17 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -24,14 +29,19 @@ import com.voicenotes.ui.viewmodel.NoteViewModel
 @Composable
 fun MainScreen(
     notes: List<NoteEntity>,
+    categories: List<String>,
     onAddClick: () -> Unit,
-    onNoteClick: (Long) -> Unit
+    onNoteClick: (Long) -> Unit,
+    onDelete: (NoteEntity) -> Unit,
+    onRenameCategory: (String, String) -> Unit
 ) {
     var selected by remember { mutableStateOf("Все") }
-    val categories = listOf("Все", "Бизнес-идея", "Задача", "Заметка")
+    val categoriesAll = remember(categories) { listOf("Все") + categories }
     val filtered = remember(notes, selected) {
         if (selected == "Все") notes else notes.filter { it.category == selected }
     }
+    var editingCategory by remember { mutableStateOf<String?>(null) }
+    var newCategoryName by remember { mutableStateOf("") }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -53,7 +63,7 @@ fun MainScreen(
 
         // Фильтры
         Row(modifier = Modifier.padding(top = 12.dp)) {
-            categories.forEach { cat ->
+            categoriesAll.forEach { cat ->
                 AssistChip(
                     onClick = { selected = cat },
                     label = { Text(cat) },
@@ -61,9 +71,44 @@ fun MainScreen(
                         containerColor = if (selected == cat) Color(0xFF4A4A6A) else Color(0xFF2F2F4F),
                         labelColor = Color.White
                     ),
-                    modifier = Modifier.padding(end = 8.dp)
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .pointerInput(cat) {
+                            detectTapGestures(onLongPress = {
+                                if (cat != "Все") {
+                                    editingCategory = cat
+                                    newCategoryName = cat
+                                }
+                            })
+                        }
                 )
             }
+        }
+
+        if (editingCategory != null) {
+            AlertDialog(
+                onDismissRequest = { editingCategory = null },
+                title = { Text("Переименовать категорию") },
+                text = {
+                    OutlinedTextField(
+                        value = newCategoryName,
+                        onValueChange = { newCategoryName = it },
+                        label = { Text("Новое имя") }
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        val old = editingCategory ?: return@TextButton
+                        if (newCategoryName.isNotBlank() && newCategoryName != old) {
+                            onRenameCategory(old, newCategoryName)
+                        }
+                        editingCategory = null
+                    }) { Text("Сохранить") }
+                },
+                dismissButton = {
+                    TextButton(onClick = { editingCategory = null }) { Text("Отмена") }
+                }
+            )
         }
 
         LazyColumn(
@@ -71,17 +116,60 @@ fun MainScreen(
                 .weight(1f)
                 .padding(top = 8.dp)
         ) {
-            items(filtered) { note ->
-                Card(
-                    onClick = { onNoteClick(note.id) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                        .height(120.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF2A2A4A)
-                    )
-                ) {
+            items(filtered, key = { it.id }, contentType = { it.category }) { note ->
+                val dismissState = rememberSwipeToDismissBoxState(
+                    confirmValueChange = { value ->
+                        when (value) {
+                            SwipeToDismissBoxValue.StartToEnd -> {
+                                onNoteClick(note.id)
+                                false
+                            }
+                            SwipeToDismissBoxValue.EndToStart -> {
+                                onDelete(note)
+                                true
+                            }
+                            else -> false
+                        }
+                    }
+                )
+
+                SwipeToDismissBox(
+                    state = dismissState,
+                    enableDismissFromStartToEnd = true,
+                    enableDismissFromEndToStart = true,
+                    backgroundContent = {
+                        val bgColor = when (dismissState.currentValue) {
+                            SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.errorContainer
+                            SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.primaryContainer
+                            else -> MaterialTheme.colorScheme.surfaceVariant
+                        }
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(120.dp)
+                                .background(bgColor)
+                                .padding(horizontal = 20.dp),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            val text = when (dismissState.currentValue) {
+                                SwipeToDismissBoxValue.EndToStart -> "Удалить"
+                                SwipeToDismissBoxValue.StartToEnd -> "Редактировать"
+                                else -> "Смахните для действий"
+                            }
+                            Text(text = text, style = MaterialTheme.typography.bodyMedium)
+                        }
+                    },
+                    content = {
+                        Card(
+                            onClick = { onNoteClick(note.id) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                                .height(120.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFF2A2A4A)
+                            )
+                        ) {
                     Row(
                         modifier = Modifier
                             .fillMaxSize()
@@ -166,7 +254,9 @@ fun MainScreen(
                             }
                         }
                     }
-                }
+                        }
+                    }
+                )
             }
         }
 

@@ -58,4 +58,16 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
             _notes.value = repository.getNotesByCategory(category)
         }
     }
+
+    suspend fun getNoteById(id: Long): NoteEntity? {
+        return repository.getNoteById(id)
+    }
+
+    fun renameCategory(oldCategory: String, newCategory: String) {
+        viewModelScope.launch {
+            repository.renameCategory(oldCategory, newCategory)
+            loadNotes()
+            loadCategories()
+        }
+    }
 }
