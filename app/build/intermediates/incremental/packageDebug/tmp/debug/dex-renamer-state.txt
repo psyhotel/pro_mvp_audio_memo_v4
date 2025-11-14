@@ -1,4 +1,4 @@
-#Thu Nov 13 21:02:13 YEKT 2025
+#Fri Nov 14 11:39:38 YEKT 2025
 base.0=/Users/tema/Desktop/pro_mvp_audio_memo_v4/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
 base.1=/Users/tema/Desktop/pro_mvp_audio_memo_v4/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
 base.10=/Users/tema/Desktop/pro_mvp_audio_memo_v4/app/build/intermediates/dex/debug/mergeExtDexDebug/classes3.dex

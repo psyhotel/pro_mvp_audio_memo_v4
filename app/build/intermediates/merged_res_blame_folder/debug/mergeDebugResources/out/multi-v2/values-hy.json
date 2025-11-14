@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.voicenotes.app-mergeDebugResources-70:/values-hy/values-hy.xml",
+            "outputFile": "com.voicenotes.app-mergeDebugResources-71:/values-hy/values-hy.xml",
             "map": [
                 {
                     "source": "/Users/tema/.gradle/caches/8.9/transforms/c6fa431e25b7c3ef82976473b7520f15/transformed/core-1.13.1/res/values-hy/values-hy.xml",

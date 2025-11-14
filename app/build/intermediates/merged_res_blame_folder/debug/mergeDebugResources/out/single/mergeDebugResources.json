@@ -1,26 +1,26 @@
 [
     {
-        "merged": "com.voicenotes.app-debug-72:/drawable_ic_add.xml.flat",
-        "source": "com.voicenotes.app-main-74:/drawable/ic_add.xml"
+        "merged": "com.voicenotes.app-debug-73:/drawable_ic_arrow_back.xml.flat",
+        "source": "com.voicenotes.app-main-75:/drawable/ic_arrow_back.xml"
     },
     {
-        "merged": "com.voicenotes.app-debug-72:/drawable_ic_lightbulb.xml.flat",
-        "source": "com.voicenotes.app-main-74:/drawable/ic_lightbulb.xml"
+        "merged": "com.voicenotes.app-debug-73:/drawable_ic_lightbulb.xml.flat",
+        "source": "com.voicenotes.app-main-75:/drawable/ic_lightbulb.xml"
     },
     {
-        "merged": "com.voicenotes.app-debug-72:/drawable_ic_arrow_back.xml.flat",
-        "source": "com.voicenotes.app-main-74:/drawable/ic_arrow_back.xml"
+        "merged": "com.voicenotes.app-debug-73:/drawable_ic_mic.xml.flat",
+        "source": "com.voicenotes.app-main-75:/drawable/ic_mic.xml"
     },
     {
-        "merged": "com.voicenotes.app-debug-72:/drawable_ic_check.xml.flat",
-        "source": "com.voicenotes.app-main-74:/drawable/ic_check.xml"
+        "merged": "com.voicenotes.app-debug-73:/drawable_ic_add.xml.flat",
+        "source": "com.voicenotes.app-main-75:/drawable/ic_add.xml"
     },
     {
-        "merged": "com.voicenotes.app-debug-72:/drawable_ic_note.xml.flat",
-        "source": "com.voicenotes.app-main-74:/drawable/ic_note.xml"
+        "merged": "com.voicenotes.app-debug-73:/drawable_ic_check.xml.flat",
+        "source": "com.voicenotes.app-main-75:/drawable/ic_check.xml"
     },
     {
-        "merged": "com.voicenotes.app-debug-72:/drawable_ic_mic.xml.flat",
-        "source": "com.voicenotes.app-main-74:/drawable/ic_mic.xml"
+        "merged": "com.voicenotes.app-debug-73:/drawable_ic_note.xml.flat",
+        "source": "com.voicenotes.app-main-75:/drawable/ic_note.xml"
     }
 ]

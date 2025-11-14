@@ -30,10 +30,12 @@ import com.voicenotes.ui.viewmodel.NoteViewModel
 fun MainScreen(
     notes: List<NoteEntity>,
     categories: List<String>,
-    onAddClick: () -> Unit,
+    onAddAudioClick: () -> Unit,
+    onAddTextClick: () -> Unit,
     onNoteClick: (Long) -> Unit,
     onDelete: (NoteEntity) -> Unit,
-    onRenameCategory: (String, String) -> Unit
+    onRenameCategory: (String, String) -> Unit,
+    onSettingsClick: () -> Unit
 ) {
     var selected by remember { mutableStateOf("Все") }
     val categoriesAll = remember(categories) { listOf("Все") + categories }
@@ -50,19 +52,24 @@ fun MainScreen(
             )
             .padding(16.dp)
     ) {
-        Text(
-            text = "Мысли",
-            style = MaterialTheme.typography.headlineLarge.copy(color = Color.White),
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Мысли",
+                style = MaterialTheme.typography.headlineLarge.copy(color = Color.White)
+            )
+            TextButton(onClick = onSettingsClick) { Text("Настройки") }
+        }
 
         Text(
             text = "${filtered.size} записей",
             style = MaterialTheme.typography.bodyMedium.copy(color = Color.White.copy(alpha = 0.7f))
         )
 
-        // Фильтры
-        Row(modifier = Modifier.padding(top = 12.dp)) {
+        Row(modifier = Modifier.padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
             categoriesAll.forEach { cat ->
                 AssistChip(
                     onClick = { selected = cat },
@@ -82,6 +89,11 @@ fun MainScreen(
                             })
                         }
                 )
+            }
+            if (selected != "Все") {
+                TextButton(onClick = { editingCategory = selected; newCategoryName = selected }) {
+                    Text("Переименовать")
+                }
             }
         }
 
@@ -260,19 +272,20 @@ fun MainScreen(
             }
         }
 
-        FloatingActionButton(
-            onClick = onAddClick,
-            containerColor = MicrophoneRed,
+        Row(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(16.dp)
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Icon(
-                painter = painterResource(com.voicenotes.R.drawable.ic_add),
-                contentDescription = "Добавить",
-                tint = Color.White,
-                modifier = Modifier.size(32.dp)
-            )
+            ExtendedFloatingActionButton(
+                onClick = onAddAudioClick,
+                containerColor = MicrophoneRed
+            ) { Text("Аудио") }
+            ExtendedFloatingActionButton(
+                onClick = onAddTextClick,
+                containerColor = Color(0xFF4A4A6A)
+            ) { Text("Текст") }
         }
     }
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.voicenotes.data.local.entities.NoteEntity
 import com.voicenotes.data.repository.NoteRepository
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -16,8 +17,12 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
     val categories: StateFlow<List<String>> = _categories
 
     init {
-        loadNotes()
-        loadCategories()
+        viewModelScope.launch {
+            repository.getAllNotesFlow().collectLatest { _notes.value = it }
+        }
+        viewModelScope.launch {
+            repository.getAllCategoriesFlow().collectLatest { _categories.value = it }
+        }
     }
 
     fun loadNotes() {
@@ -36,6 +41,14 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         viewModelScope.launch {
             repository.insertNote(note)
             loadNotes()
+        }
+    }
+
+    fun insertNote(note: NoteEntity, onInserted: (Long) -> Unit) {
+        viewModelScope.launch {
+            val id = repository.insertNote(note)
+            loadNotes()
+            onInserted(id)
         }
     }
 

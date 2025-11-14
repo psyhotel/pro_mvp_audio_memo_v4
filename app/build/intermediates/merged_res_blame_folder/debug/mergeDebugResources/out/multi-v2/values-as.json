@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.voicenotes.app-mergeDebugResources-70:/values-as/values-as.xml",
+            "outputFile": "com.voicenotes.app-mergeDebugResources-71:/values-as/values-as.xml",
             "map": [
                 {
                     "source": "/Users/tema/.gradle/caches/8.9/transforms/b7f4b8556d411e876c316a29c12061b0/transformed/jetified-ui-release/res/values-as/values-as.xml",

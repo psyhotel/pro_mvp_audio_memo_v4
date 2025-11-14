@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.voicenotes.app-mergeDebugResources-70:/values-es/values-es.xml",
+            "outputFile": "com.voicenotes.app-mergeDebugResources-71:/values-es/values-es.xml",
             "map": [
                 {
                     "source": "/Users/tema/.gradle/caches/8.9/transforms/afe45628696cd57ac65fedc6644a9d1e/transformed/jetified-material3-release/res/values-es/values-es.xml",

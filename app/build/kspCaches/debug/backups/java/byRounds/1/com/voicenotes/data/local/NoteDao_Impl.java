@@ -28,6 +28,7 @@ import java.util.concurrent.Callable;
 import javax.annotation.processing.Generated;
 import kotlin.Unit;
 import kotlin.coroutines.Continuation;
+import kotlinx.coroutines.flow.Flow;
 
 @Generated("androidx.room.RoomProcessor")
 @SuppressWarnings({"unchecked", "deprecation"})
@@ -41,6 +42,8 @@ public final class NoteDao_Impl implements NoteDao {
   private final EntityDeletionOrUpdateAdapter<NoteEntity> __updateAdapterOfNoteEntity;
 
   private final SharedSQLiteStatement __preparedStmtOfRenameCategory;
+
+  private final SharedSQLiteStatement __preparedStmtOfUpdateNoteContent;
 
   public NoteDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
@@ -130,19 +133,27 @@ public final class NoteDao_Impl implements NoteDao {
         return _query;
       }
     };
+    this.__preparedStmtOfUpdateNoteContent = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "UPDATE notes SET content = ? WHERE id = ?";
+        return _query;
+      }
+    };
   }
 
   @Override
-  public Object insertNote(final NoteEntity note, final Continuation<? super Unit> $completion) {
-    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+  public Object insertNote(final NoteEntity note, final Continuation<? super Long> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Long>() {
       @Override
       @NonNull
-      public Unit call() throws Exception {
+      public Long call() throws Exception {
         __db.beginTransaction();
         try {
-          __insertionAdapterOfNoteEntity.insert(note);
+          final Long _result = __insertionAdapterOfNoteEntity.insertAndReturnId(note);
           __db.setTransactionSuccessful();
-          return Unit.INSTANCE;
+          return _result;
         } finally {
           __db.endTransaction();
         }
@@ -215,6 +226,34 @@ public final class NoteDao_Impl implements NoteDao {
   }
 
   @Override
+  public Object updateNoteContent(final long id, final String content,
+      final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfUpdateNoteContent.acquire();
+        int _argIndex = 1;
+        _stmt.bindString(_argIndex, content);
+        _argIndex = 2;
+        _stmt.bindLong(_argIndex, id);
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfUpdateNoteContent.release(_stmt);
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
   public Object getAllNotes(final Continuation<? super List<NoteEntity>> $completion) {
     final String _sql = "SELECT * FROM notes ORDER BY timestamp DESC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
@@ -274,6 +313,71 @@ public final class NoteDao_Impl implements NoteDao {
         }
       }
     }, $completion);
+  }
+
+  @Override
+  public Flow<List<NoteEntity>> getAllNotesFlow() {
+    final String _sql = "SELECT * FROM notes ORDER BY timestamp DESC";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+    return CoroutinesRoom.createFlow(__db, false, new String[] {"notes"}, new Callable<List<NoteEntity>>() {
+      @Override
+      @NonNull
+      public List<NoteEntity> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfId = CursorUtil.getColumnIndexOrThrow(_cursor, "id");
+          final int _cursorIndexOfTitle = CursorUtil.getColumnIndexOrThrow(_cursor, "title");
+          final int _cursorIndexOfContent = CursorUtil.getColumnIndexOrThrow(_cursor, "content");
+          final int _cursorIndexOfCategory = CursorUtil.getColumnIndexOrThrow(_cursor, "category");
+          final int _cursorIndexOfTimestamp = CursorUtil.getColumnIndexOrThrow(_cursor, "timestamp");
+          final int _cursorIndexOfFilePath = CursorUtil.getColumnIndexOrThrow(_cursor, "filePath");
+          final int _cursorIndexOfReminderTime = CursorUtil.getColumnIndexOrThrow(_cursor, "reminderTime");
+          final int _cursorIndexOfReportType = CursorUtil.getColumnIndexOrThrow(_cursor, "reportType");
+          final List<NoteEntity> _result = new ArrayList<NoteEntity>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final NoteEntity _item;
+            final long _tmpId;
+            _tmpId = _cursor.getLong(_cursorIndexOfId);
+            final String _tmpTitle;
+            _tmpTitle = _cursor.getString(_cursorIndexOfTitle);
+            final String _tmpContent;
+            _tmpContent = _cursor.getString(_cursorIndexOfContent);
+            final String _tmpCategory;
+            _tmpCategory = _cursor.getString(_cursorIndexOfCategory);
+            final long _tmpTimestamp;
+            _tmpTimestamp = _cursor.getLong(_cursorIndexOfTimestamp);
+            final String _tmpFilePath;
+            if (_cursor.isNull(_cursorIndexOfFilePath)) {
+              _tmpFilePath = null;
+            } else {
+              _tmpFilePath = _cursor.getString(_cursorIndexOfFilePath);
+            }
+            final Long _tmpReminderTime;
+            if (_cursor.isNull(_cursorIndexOfReminderTime)) {
+              _tmpReminderTime = null;
+            } else {
+              _tmpReminderTime = _cursor.getLong(_cursorIndexOfReminderTime);
+            }
+            final String _tmpReportType;
+            if (_cursor.isNull(_cursorIndexOfReportType)) {
+              _tmpReportType = null;
+            } else {
+              _tmpReportType = _cursor.getString(_cursorIndexOfReportType);
+            }
+            _item = new NoteEntity(_tmpId,_tmpTitle,_tmpContent,_tmpCategory,_tmpTimestamp,_tmpFilePath,_tmpReminderTime,_tmpReportType);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+        }
+      }
+
+      @Override
+      protected void finalize() {
+        _statement.release();
+      }
+    });
   }
 
   @Override
@@ -367,6 +471,35 @@ public final class NoteDao_Impl implements NoteDao {
   }
 
   @Override
+  public Flow<List<String>> getAllCategoriesFlow() {
+    final String _sql = "SELECT DISTINCT category FROM notes";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+    return CoroutinesRoom.createFlow(__db, false, new String[] {"notes"}, new Callable<List<String>>() {
+      @Override
+      @NonNull
+      public List<String> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final List<String> _result = new ArrayList<String>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final String _item;
+            _item = _cursor.getString(0);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+        }
+      }
+
+      @Override
+      protected void finalize() {
+        _statement.release();
+      }
+    });
+  }
+
+  @Override
   public Object getNotesByCategory(final String category,
       final Continuation<? super List<NoteEntity>> $completion) {
     final String _sql = "SELECT * FROM notes WHERE category = ?";
@@ -429,6 +562,73 @@ public final class NoteDao_Impl implements NoteDao {
         }
       }
     }, $completion);
+  }
+
+  @Override
+  public Flow<List<NoteEntity>> getNotesByCategoryFlow(final String category) {
+    final String _sql = "SELECT * FROM notes WHERE category = ?";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    int _argIndex = 1;
+    _statement.bindString(_argIndex, category);
+    return CoroutinesRoom.createFlow(__db, false, new String[] {"notes"}, new Callable<List<NoteEntity>>() {
+      @Override
+      @NonNull
+      public List<NoteEntity> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfId = CursorUtil.getColumnIndexOrThrow(_cursor, "id");
+          final int _cursorIndexOfTitle = CursorUtil.getColumnIndexOrThrow(_cursor, "title");
+          final int _cursorIndexOfContent = CursorUtil.getColumnIndexOrThrow(_cursor, "content");
+          final int _cursorIndexOfCategory = CursorUtil.getColumnIndexOrThrow(_cursor, "category");
+          final int _cursorIndexOfTimestamp = CursorUtil.getColumnIndexOrThrow(_cursor, "timestamp");
+          final int _cursorIndexOfFilePath = CursorUtil.getColumnIndexOrThrow(_cursor, "filePath");
+          final int _cursorIndexOfReminderTime = CursorUtil.getColumnIndexOrThrow(_cursor, "reminderTime");
+          final int _cursorIndexOfReportType = CursorUtil.getColumnIndexOrThrow(_cursor, "reportType");
+          final List<NoteEntity> _result = new ArrayList<NoteEntity>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final NoteEntity _item;
+            final long _tmpId;
+            _tmpId = _cursor.getLong(_cursorIndexOfId);
+            final String _tmpTitle;
+            _tmpTitle = _cursor.getString(_cursorIndexOfTitle);
+            final String _tmpContent;
+            _tmpContent = _cursor.getString(_cursorIndexOfContent);
+            final String _tmpCategory;
+            _tmpCategory = _cursor.getString(_cursorIndexOfCategory);
+            final long _tmpTimestamp;
+            _tmpTimestamp = _cursor.getLong(_cursorIndexOfTimestamp);
+            final String _tmpFilePath;
+            if (_cursor.isNull(_cursorIndexOfFilePath)) {
+              _tmpFilePath = null;
+            } else {
+              _tmpFilePath = _cursor.getString(_cursorIndexOfFilePath);
+            }
+            final Long _tmpReminderTime;
+            if (_cursor.isNull(_cursorIndexOfReminderTime)) {
+              _tmpReminderTime = null;
+            } else {
+              _tmpReminderTime = _cursor.getLong(_cursorIndexOfReminderTime);
+            }
+            final String _tmpReportType;
+            if (_cursor.isNull(_cursorIndexOfReportType)) {
+              _tmpReportType = null;
+            } else {
+              _tmpReportType = _cursor.getString(_cursorIndexOfReportType);
+            }
+            _item = new NoteEntity(_tmpId,_tmpTitle,_tmpContent,_tmpCategory,_tmpTimestamp,_tmpFilePath,_tmpReminderTime,_tmpReportType);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+        }
+      }
+
+      @Override
+      protected void finalize() {
+        _statement.release();
+      }
+    });
   }
 
   @NonNull

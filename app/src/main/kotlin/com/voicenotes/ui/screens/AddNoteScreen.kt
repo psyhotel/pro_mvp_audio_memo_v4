@@ -16,24 +16,36 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.PermissionStatus
+import android.Manifest
 import com.voicenotes.ui.viewmodel.NoteViewModel
 import com.voicenotes.ui.theme.GradientStart
 import com.voicenotes.ui.theme.GradientEnd
 import com.voicenotes.ui.theme.MicrophoneRed
 import com.voicenotes.data.local.entities.NoteEntity
-import com.voicenotes.utils.AudioRecorder
+import com.voicenotes.utils.WavAudioRecorder
 import kotlinx.coroutines.launch
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.compose.runtime.rememberCoroutineScope
+import com.voicenotes.BuildConfig
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AddNoteScreen(viewModel: NoteViewModel, onBack: () -> Unit) {
     var isRecording by remember { mutableStateOf(false) }
     var seconds by remember { mutableStateOf(0) }
     val context = LocalContext.current
-    val audioRecorder = remember { AudioRecorder() }
+    val audioRecorder = remember { WavAudioRecorder() }
     var recordedFilePath by remember { mutableStateOf<String?>(null) }
+    val settings = remember { com.voicenotes.utils.SettingsManager(context) }
+    var offline by remember { mutableStateOf(settings.getMode() == com.voicenotes.utils.SettingsManager.MODE_OFFLINE) }
+    var lang by remember { mutableStateOf(settings.getLang()) }
+    val recordPermission = rememberPermissionState(Manifest.permission.RECORD_AUDIO)
 
     val scope = rememberCoroutineScope()
 
@@ -57,6 +69,41 @@ fun AddNoteScreen(viewModel: NoteViewModel, onBack: () -> Unit) {
                 text = "Запись мысли",
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.White
+            )
+        }
+
+        Row(modifier = Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            AssistChip(
+                onClick = { offline = false },
+                label = { Text("ONLINE") },
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = if (!offline) Color(0xFF4A4A6A) else Color(0xFF2F2F4F),
+                    labelColor = Color.White
+                )
+            )
+            AssistChip(
+                onClick = { offline = true },
+                label = { Text("OFFLINE") },
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = if (offline) Color(0xFF4A4A6A) else Color(0xFF2F2F4F),
+                    labelColor = Color.White
+                )
+            )
+            AssistChip(
+                onClick = { lang = "ru" },
+                label = { Text("RU") },
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = if (lang == "ru") Color(0xFF4A4A6A) else Color(0xFF2F2F4F),
+                    labelColor = Color.White
+                )
+            )
+            AssistChip(
+                onClick = { lang = "en" },
+                label = { Text("EN") },
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = if (lang == "en") Color(0xFF4A4A6A) else Color(0xFF2F2F4F),
+                    labelColor = Color.White
+                )
             )
         }
 
@@ -91,23 +138,41 @@ fun AddNoteScreen(viewModel: NoteViewModel, onBack: () -> Unit) {
             IconButton(
                 onClick = {
                     if (!isRecording) {
-                        val outputPath = "${context.getExternalFilesDir(null)?.absolutePath}/record_${System.currentTimeMillis()}.m4a"
-                        scope.launch { audioRecorder.start(outputPath) }
-                        recordedFilePath = outputPath
-                        seconds = 0
-                        isRecording = true
+                        when (recordPermission.status) {
+                            is PermissionStatus.Granted -> {
+                                val outputPath = "${context.getExternalFilesDir(null)?.absolutePath}/record_${System.currentTimeMillis()}.wav"
+                                scope.launch { audioRecorder.start(outputPath) }
+                                recordedFilePath = outputPath
+                                seconds = 0
+                                isRecording = true
+                            }
+                            else -> {
+                                recordPermission.launchPermissionRequest()
+                            }
+                        }
                     } else {
                         audioRecorder.stop()
                         isRecording = false
                         val note = NoteEntity(
                             title = "Мысль",
-                            content = "Транскрибация будет позже...",
+                            content = "Обработка аудио...",
                             category = "Заметка",
                             timestamp = System.currentTimeMillis(),
                             filePath = recordedFilePath,
                             reminderTime = null
                         )
-                        viewModel.insertNote(note)
+                        val fp = recordedFilePath
+                        viewModel.insertNote(note) { id ->
+                            if (fp != null) {
+                                com.voicenotes.worker.TranscriptionScheduler.enqueue(
+                                    context,
+                                    id,
+                                    fp,
+                                    offline,
+                                    lang
+                                )
+                            }
+                        }
                         onBack()
                     }
                 },
@@ -134,5 +199,15 @@ fun AddNoteScreen(viewModel: NoteViewModel, onBack: () -> Unit) {
             fontSize = 14.sp,
             fontWeight = FontWeight.Normal
         )
+        if (recordPermission.status is PermissionStatus.Denied) {
+            Text(
+                text = "Нужно разрешение на микрофон",
+                color = Color.Red.copy(alpha = 0.9f),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal
+            )
+        }
     }
 }

@@ -28,14 +28,32 @@ fun AppScreen() {
             MainScreen(
                 notes = notes,
                 categories = categories,
-                onAddClick = { navController.navigate("add") },
+                onAddAudioClick = { navController.navigate("add") },
+                onAddTextClick = { navController.navigate("add_text") },
                 onNoteClick = { id -> navController.navigate("detail/$id") },
                 onDelete = { note -> viewModel.deleteNote(note) },
-                onRenameCategory = { old, new -> viewModel.renameCategory(old, new) }
+                onRenameCategory = { old, new -> viewModel.renameCategory(old, new) },
+                onSettingsClick = { navController.navigate("settings") }
             )
         }
         composable("add") {
             AddNoteScreen(viewModel = viewModel) {
+                navController.popBackStack()
+            }
+        }
+        composable("add_text") {
+            com.voicenotes.ui.screens.AddTextNoteScreen(viewModel = viewModel) {
+                navController.popBackStack()
+            }
+        }
+        composable("settings") {
+            com.voicenotes.ui.screens.SettingsScreen(
+                onBack = { navController.popBackStack() },
+                onTasks = { navController.navigate("tasks") }
+            )
+        }
+        composable("tasks") {
+            com.voicenotes.ui.screens.TasksScreen {
                 navController.popBackStack()
             }
         }
