@@ -20,6 +20,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.font.FontWeight
 import com.voicenotes.data.local.entities.NoteEntity
 import com.voicenotes.ui.theme.MicrophoneRed
 import com.voicenotes.ui.theme.GradientStart
@@ -48,7 +50,7 @@ fun MainScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                Brush.verticalGradient(listOf(GradientStart, GradientEnd))
+                Brush.verticalGradient(listOf(com.voicenotes.ui.theme.GradientStart, com.voicenotes.ui.theme.GradientMid, com.voicenotes.ui.theme.GradientEnd))
             )
             .padding(16.dp)
     ) {
@@ -59,14 +61,14 @@ fun MainScreen(
         ) {
             Text(
                 text = "Мысли",
-                style = MaterialTheme.typography.headlineLarge.copy(color = Color.White)
+                style = MaterialTheme.typography.headlineLarge.copy(color = com.voicenotes.ui.theme.TextPrimary, fontSize = 38.sp, fontWeight = FontWeight.ExtraBold)
             )
             TextButton(onClick = onSettingsClick) { Text("Настройки") }
         }
 
         Text(
             text = "${filtered.size} записей",
-            style = MaterialTheme.typography.bodyMedium.copy(color = Color.White.copy(alpha = 0.7f))
+            style = MaterialTheme.typography.bodyMedium.copy(color = com.voicenotes.ui.theme.TextSecondary)
         )
 
         Row(modifier = Modifier.padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -75,8 +77,8 @@ fun MainScreen(
                     onClick = { selected = cat },
                     label = { Text(cat) },
                     colors = AssistChipDefaults.assistChipColors(
-                        containerColor = if (selected == cat) Color(0xFF4A4A6A) else Color(0xFF2F2F4F),
-                        labelColor = Color.White
+                        containerColor = if (selected == cat) com.voicenotes.ui.theme.ChipSelectedBg else com.voicenotes.ui.theme.ChipDefaultBg,
+                        labelColor = if (selected == cat) com.voicenotes.ui.theme.MicrophoneRed else com.voicenotes.ui.theme.TextSecondary
                     ),
                     modifier = Modifier
                         .padding(end = 8.dp)
@@ -179,8 +181,9 @@ fun MainScreen(
                                 .padding(vertical = 8.dp)
                                 .height(120.dp),
                             colors = CardDefaults.cardColors(
-                                containerColor = Color(0xFF2A2A4A)
-                            )
+                                containerColor = com.voicenotes.ui.theme.CardTransparent
+                            ),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, com.voicenotes.ui.theme.BorderTransparent)
                         ) {
                     Row(
                         modifier = Modifier
@@ -194,10 +197,12 @@ fun MainScreen(
                                 .fillMaxHeight()
                                 .background(
                                     when (note.category) {
-                                        "Бизнес-идея" -> Color.Yellow
-                                        "Задача" -> Color.Green
-                                        "Заметка" -> Color.Blue
-                                        else -> Color.Gray
+                                        "Бизнес-идея" -> com.voicenotes.ui.theme.CategoryBusiness
+                                        "Задача" -> com.voicenotes.ui.theme.CategoryTask
+                                        "Заметка" -> com.voicenotes.ui.theme.CategoryNote
+                                        "Размышление" -> com.voicenotes.ui.theme.CategoryThought
+                                        "Цель" -> com.voicenotes.ui.theme.CategoryGoal
+                                        else -> com.voicenotes.ui.theme.CategoryOther
                                     }
                                 )
                         )
@@ -214,20 +219,20 @@ fun MainScreen(
                                 Text(
                                     text = note.category,
                                     style = MaterialTheme.typography.bodySmall.copy(
-                                        color = Color.White.copy(alpha = 0.7f)
+                                        color = com.voicenotes.ui.theme.TextSecondary
                                     )
                                 )
                                 Text(
                                     text = "3 дня назад",
                                     style = MaterialTheme.typography.bodySmall.copy(
-                                        color = Color.White.copy(alpha = 0.7f)
+                                        color = com.voicenotes.ui.theme.TextSecondary
                                     )
                                 )
                             }
 
                             Text(
                                 text = note.content.take(100) + if (note.content.length > 100) "..." else "",
-                                style = MaterialTheme.typography.bodyMedium.copy(color = Color.White),
+                                style = MaterialTheme.typography.bodyMedium.copy(color = com.voicenotes.ui.theme.TextPrimary),
                                 modifier = Modifier.padding(top = 8.dp)
                             )
 
@@ -241,13 +246,13 @@ fun MainScreen(
                                     Icon(
                                         painter = painterResource(com.voicenotes.R.drawable.ic_mic),
                                         contentDescription = "Длительность",
-                                        tint = Color.White.copy(alpha = 0.7f),
+                                        tint = com.voicenotes.ui.theme.TextSecondary,
                                         modifier = Modifier.size(16.dp)
                                     )
                                     Text(
                                         text = "0:18",
                                         style = MaterialTheme.typography.bodySmall.copy(
-                                            color = Color.White.copy(alpha = 0.7f)
+                                            color = com.voicenotes.ui.theme.TextSecondary
                                         )
                                     )
                                 }

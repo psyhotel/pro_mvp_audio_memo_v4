@@ -33,44 +33,43 @@ fun NoteDetailScreen(noteId: Long, viewModel: NoteViewModel, onBack: () -> Unit)
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(GradientStart, GradientEnd)))
+            .background(Brush.verticalGradient(listOf(com.voicenotes.ui.theme.GradientStart, com.voicenotes.ui.theme.GradientMid, com.voicenotes.ui.theme.GradientEnd)))
             .padding(16.dp)
     ) {
-        Text(
-            text = "Редактирование",
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onPrimary
-        )
+        Text(text = "Детали", style = MaterialTheme.typography.headlineMedium, color = com.voicenotes.ui.theme.TextPrimary)
 
         Spacer(Modifier.height(12.dp))
 
         if (loadedNote == null) {
             Text("Загрузка...", color = MaterialTheme.colorScheme.onPrimary)
         } else {
-            OutlinedTextField(
-                value = title,
-                onValueChange = { title = it },
-                label = { Text("Заголовок") },
-                modifier = Modifier.fillMaxWidth()
-            )
+            OutlinedTextField(value = title, onValueChange = { title = it }, label = { Text("Заголовок") }, modifier = Modifier.fillMaxWidth())
 
             Spacer(Modifier.height(12.dp))
 
-            OutlinedTextField(
-                value = content,
-                onValueChange = { content = it },
-                label = { Text("Содержание") },
-                modifier = Modifier.fillMaxWidth()
-            )
+            Section(title = "Транскрипт") {
+                Text(text = content, style = MaterialTheme.typography.bodyMedium)
+            }
 
             Spacer(Modifier.height(12.dp))
 
-            OutlinedTextField(
-                value = category,
-                onValueChange = { category = it },
-                label = { Text("Категория") },
-                modifier = Modifier.fillMaxWidth()
-            )
+            OutlinedTextField(value = category, onValueChange = { category = it }, label = { Text("Категория") }, modifier = Modifier.fillMaxWidth())
+
+            Spacer(Modifier.height(12.dp))
+            Section(title = "Резюме") {
+                Text(text = if (content.isBlank()) "" else content.take(120), style = MaterialTheme.typography.bodyMedium)
+            }
+
+            Spacer(Modifier.height(12.dp))
+            Section(title = "Ключевые моменты") {
+                val bullets = content.split(". ").take(2)
+                bullets.forEach { Text("• ${it}", style = MaterialTheme.typography.bodyMedium) }
+            }
+
+            Spacer(Modifier.height(12.dp))
+            Section(title = "Action Items") {
+                Text(text = "Добавить напоминание", style = MaterialTheme.typography.bodyMedium)
+            }
 
             Spacer(Modifier.height(24.dp))
 
@@ -90,6 +89,20 @@ fun NoteDetailScreen(noteId: Long, viewModel: NoteViewModel, onBack: () -> Unit)
             }) {
                 Text("Сохранить")
             }
+        }
+    }
+}
+
+@Composable
+private fun Section(title: String, content: @Composable ColumnScope.() -> Unit) {
+    Text(text = title, style = MaterialTheme.typography.titleMedium, color = com.voicenotes.ui.theme.TextPrimary)
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+        colors = CardDefaults.cardColors(containerColor = com.voicenotes.ui.theme.CardTransparent),
+        border = androidx.compose.foundation.BorderStroke(1.dp, com.voicenotes.ui.theme.BorderTransparent)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            content()
         }
     }
 }

@@ -33,6 +33,9 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.compose.runtime.rememberCoroutineScope
 import com.voicenotes.BuildConfig
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import androidx.compose.runtime.collectAsState
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -46,6 +49,10 @@ fun AddNoteScreen(viewModel: NoteViewModel, onBack: () -> Unit) {
     var offline by remember { mutableStateOf(settings.getMode() == com.voicenotes.utils.SettingsManager.MODE_OFFLINE) }
     var lang by remember { mutableStateOf(settings.getLang()) }
     val recordPermission = rememberPermissionState(Manifest.permission.RECORD_AUDIO)
+    val wm = remember { WorkManager.getInstance(context) }
+    var processingName by remember { mutableStateOf<String?>(null) }
+    val infosFlow = remember(processingName) { processingName?.let { wm.getWorkInfosForUniqueWorkFlow(it) } }
+    val workInfos by (infosFlow?.collectAsState(initial = emptyList()) ?: remember { mutableStateOf(emptyList()) })
 
     val scope = rememberCoroutineScope()
 
@@ -61,51 +68,50 @@ fun AddNoteScreen(viewModel: NoteViewModel, onBack: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(GradientStart, GradientEnd)))
+            .background(Brush.verticalGradient(listOf(com.voicenotes.ui.theme.GradientStart, com.voicenotes.ui.theme.GradientMid, com.voicenotes.ui.theme.GradientEnd)))
             .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = "Запись мысли",
-                style = MaterialTheme.typography.titleLarge,
-                color = Color.White
+                style = MaterialTheme.typography.titleLarge.copy(color = com.voicenotes.ui.theme.TextPrimary, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             )
         }
 
-        Row(modifier = Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            AssistChip(
-                onClick = { offline = false },
-                label = { Text("ONLINE") },
-                colors = AssistChipDefaults.assistChipColors(
-                    containerColor = if (!offline) Color(0xFF4A4A6A) else Color(0xFF2F2F4F),
-                    labelColor = Color.White
-                )
-            )
-            AssistChip(
-                onClick = { offline = true },
-                label = { Text("OFFLINE") },
-                colors = AssistChipDefaults.assistChipColors(
-                    containerColor = if (offline) Color(0xFF4A4A6A) else Color(0xFF2F2F4F),
-                    labelColor = Color.White
-                )
-            )
-            AssistChip(
-                onClick = { lang = "ru" },
-                label = { Text("RU") },
-                colors = AssistChipDefaults.assistChipColors(
-                    containerColor = if (lang == "ru") Color(0xFF4A4A6A) else Color(0xFF2F2F4F),
-                    labelColor = Color.White
-                )
-            )
-            AssistChip(
-                onClick = { lang = "en" },
-                label = { Text("EN") },
-                colors = AssistChipDefaults.assistChipColors(
-                    containerColor = if (lang == "en") Color(0xFF4A4A6A) else Color(0xFF2F2F4F),
-                    labelColor = Color.White
-                )
-            )
-        }
+                Row(modifier = Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    AssistChip(
+                        onClick = { offline = false },
+                        label = { Text("ONLINE") },
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = if (!offline) com.voicenotes.ui.theme.ChipSelectedBg else com.voicenotes.ui.theme.ChipDefaultBg,
+                            labelColor = if (!offline) com.voicenotes.ui.theme.MicrophoneRed else com.voicenotes.ui.theme.TextSecondary
+                        )
+                    )
+                    AssistChip(
+                        onClick = { offline = true },
+                        label = { Text("OFFLINE") },
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = if (offline) com.voicenotes.ui.theme.ChipSelectedBg else com.voicenotes.ui.theme.ChipDefaultBg,
+                            labelColor = if (offline) com.voicenotes.ui.theme.MicrophoneRed else com.voicenotes.ui.theme.TextSecondary
+                        )
+                    )
+                    AssistChip(
+                        onClick = { lang = "ru" },
+                        label = { Text("RU") },
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = if (lang == "ru") com.voicenotes.ui.theme.ChipSelectedBg else com.voicenotes.ui.theme.ChipDefaultBg,
+                            labelColor = if (lang == "ru") com.voicenotes.ui.theme.MicrophoneRed else com.voicenotes.ui.theme.TextSecondary
+                        )
+                    )
+                    AssistChip(
+                        onClick = { lang = "en" },
+                        label = { Text("EN") },
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = if (lang == "en") com.voicenotes.ui.theme.ChipSelectedBg else com.voicenotes.ui.theme.ChipDefaultBg,
+                            labelColor = if (lang == "en") com.voicenotes.ui.theme.MicrophoneRed else com.voicenotes.ui.theme.TextSecondary
+                        )
+                    )
+                }
 
         Spacer(Modifier.height(48.dp))
 
@@ -171,9 +177,9 @@ fun AddNoteScreen(viewModel: NoteViewModel, onBack: () -> Unit) {
                                     offline,
                                     lang
                                 )
+                                processingName = "transcribe_${id}"
                             }
                         }
-                        onBack()
                     }
                 },
                 modifier = Modifier
@@ -208,6 +214,29 @@ fun AddNoteScreen(viewModel: NoteViewModel, onBack: () -> Unit) {
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Normal
             )
+        }
+
+        if (processingName != null) {
+            Spacer(Modifier.height(16.dp))
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = MicrophoneRed)
+            }
+            Text(
+                text = "Обработка записи...",
+                color = Color.White.copy(alpha = 0.8f),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+            )
+        }
+
+        LaunchedEffect(workInfos) {
+            if (processingName != null) {
+                val finished = workInfos.any { it.state == WorkInfo.State.SUCCEEDED || it.state == WorkInfo.State.FAILED || it.state == WorkInfo.State.CANCELLED }
+                if (finished) {
+                    processingName = null
+                    onBack()
+                }
+            }
         }
     }
 }

@@ -17,11 +17,15 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = DarkBlue,
-    secondary = Navy,
+    primary = MicrophoneRed,
+    secondary = AccentPink,
     tertiary = MicrophoneRed,
     background = DarkBlue,
-    surface = Navy
+    surface = Navy,
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onBackground = TextPrimary,
+    onSurface = TextPrimary
 )
 
 @Composable
@@ -37,8 +41,8 @@ fun VoiceNotesTheme(
         }
         darkTheme -> DarkColorScheme
         else -> lightColorScheme(
-            primary = DarkBlue,
-            secondary = Navy,
+            primary = MicrophoneRed,
+            secondary = AccentPink,
             tertiary = MicrophoneRed
         )
     }
